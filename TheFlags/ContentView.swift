@@ -15,6 +15,7 @@ struct ContentView: View {
     
     @State private var showingScore = false
     @State private var scoreTitle = ""
+    @State private var calculatedScore = 0
     
     var body: some View {
         
@@ -22,50 +23,76 @@ struct ContentView: View {
             RadialGradient(stops: [
                 .init(color: Color(red: 0.1, green: 0.2, blue: 0.45), location: 0.3),
                 .init(color: Color(red: 0.76, green: 0.15, blue: 0.26), location: 0.3),
-            ], center: .top, startRadius: 200, endRadius: 450)
-
-            VStack(spacing: 30) {
-                VStack {
-                    Text("Tap the flag of")
-                        .foregroundStyle(.white)
-                        .font(.subheadline.weight(.heavy))
-                    Text(countries[correctAnswer])
-                        .foregroundStyle(.white)
-                        .font(.largeTitle.weight(.semibold))
-                } //VStack
+            ], center: .top, startRadius: 200, endRadius: 700)
+            
+            
+            VStack {
                 
-                ForEach(0..<3) { number in
-                    Button {
-                       flagTapped(number)
-                    } label: {
-                        Image(countries[number])
-                            .clipShape(.capsule)
-                            .shadow(radius: 5)
+                Spacer()
+                
+                Text("Guess the Flag")
+                    .font(.largeTitle.bold())
+                    .foregroundColor(.white)
+                
+                VStack(spacing: 15) {
+                    VStack {
+                        Text("Tap the flag of")
+                            .foregroundStyle(.secondary)
+                            .font(.subheadline.weight(.heavy))
+                        Text(countries[correctAnswer])
+                            .font(.largeTitle.weight(.semibold))
+                    } //VStack
+                    
+                    ForEach(0..<3) { number in
+                        Button {
+                            flagTapped(number)
+                        } label: {
+                            Image(countries[number])
+                                .clipShape(.capsule)
+                                .shadow(radius: 5)
+                        }
                     }
-                }
+                    
+                } //VStack
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 20)
+                .background(.regularMaterial)
+                .clipShape(.rect(cornerRadius: 20))
+                
+                Spacer()
+                Spacer()
+                
+                Text("Score: \(calculatedScore)")
+                    .foregroundColor(.white)
+                    .font(.title.bold())
+                
+                Spacer()
                 
             } //VStack
-            
-            .alert(scoreTitle, isPresented: $showingScore) {
-                Button("Continue", action: askQuestion)
-            } message: {
-                Text("Your score is ???")
-                    .foregroundStyle(.white)
-                    .font(.title.bold())
-            }
+            .padding()
             
         } //ZStack
-            .ignoresSafeArea()
+        .alert(scoreTitle, isPresented: $showingScore) {
+            Button("Continue", action: askQuestion)
+        } message: {
+            Text("Your score is \(calculatedScore)")
+                .foregroundStyle(.white)
+                .font(.title.bold())
+        }
+        
+        .ignoresSafeArea()
     } //Body
     
     // MARK: - Properties
     func flagTapped(_ number: Int) {
         if number == correctAnswer {
             scoreTitle = "Correct"
+            calculatedScore += 10
         } else {
             scoreTitle = "Wrong"
+            calculatedScore -= 10/3
         }
-
+        
         showingScore = true
     }
     
